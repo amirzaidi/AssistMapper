@@ -1,7 +1,11 @@
 package amirz.applauncher;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +59,12 @@ public class PickerList extends ArrayAdapter<PickerInfo> {
         }
 
         PickerInfo pickerInfo = getItem(position);
-
         if (pickerInfo != null) {
-            ImageView imageView = convertView.findViewById(R.id.imageView);
-            imageView.setImageDrawable(pickerInfo.icon);
+            new ImageAsyncTask((ImageView)convertView.findViewById(R.id.imageView)).execute(pickerInfo);
+
             TextView textView = convertView.findViewById(R.id.textView);
             textView.setText(pickerInfo.labelName);
+            textView.setTypeface(null, pickerInfo.launcher ? Typeface.BOLD : Typeface.NORMAL);
             textView = convertView.findViewById(R.id.textView2);
             textView.setText(pickerInfo.packageName);
             textView = convertView.findViewById(R.id.textView3);
@@ -68,5 +72,30 @@ public class PickerList extends ArrayAdapter<PickerInfo> {
         }
 
         return convertView;
+    }
+
+    class ImageAsyncTask extends AsyncTask<PickerInfo, Void, Object> {
+
+        private ImageView imageView;
+
+        public ImageAsyncTask(ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        protected Object doInBackground(PickerInfo... pickerInfos) {
+            if (pickerInfos[0].iconRes != 0 && pickerInfos[0].resources != null) {
+                try {
+                    return pickerInfos[0].resources.getDrawableForDensity(pickerInfos[0].iconRes, DisplayMetrics.DENSITY_XHIGH, null);
+                } catch (OutOfMemoryError e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(Object result) {
+            imageView.setImageDrawable((Drawable)result);
+        }
     }
 }

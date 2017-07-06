@@ -1,17 +1,23 @@
 package amirz.applauncher;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -21,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +76,17 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        String assistant = Settings.Secure.getString(getContentResolver(), "voice_interaction_service");
+        if (assistant != null) {
+            ComponentName cn = ComponentName.unflattenFromString(assistant);
+            if (cn.getPackageName().equals(getPackageName())) {
+                return;
+            }
+        }
+
+        Toast.makeText(this, R.string.set_assist, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(Settings.ACTION_VOICE_INPUT_SETTINGS));
     }
 
     @Override
@@ -92,18 +110,37 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
 
         protected List<PickerInfo> doInBackground(Context... context) {
             PackageManager pm = context[0].getPackageManager();
-
             List<PackageInfo> packages = pm.getInstalledPackages(PackageManager.GET_ACTIVITIES);
+
+            final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+            List<String> launcher = new ArrayList<>();
+            for (ResolveInfo ri : pm.queryIntentActivities(mainIntent, 0)) {
+                if (ri.activityInfo != null) {
+                    launcher.add(ri.activityInfo.name);
+                }
+            }
+
             int i = 0;
             for (PackageInfo packageInfo : packages) {
                 ArrayList<PickerInfo> list = new ArrayList<>();
+                Resources r = null;
+                try {
+                    r = createPackageContext(packageInfo.packageName, Context.CONTEXT_IGNORE_SECURITY).getResources();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+
                 if (packageInfo.activities != null) {
                     for (ActivityInfo activityInfo : packageInfo.activities) {
                         PickerInfo info = new PickerInfo();
                         info.packageName = activityInfo.packageName;
                         info.activityName = activityInfo.name;
-                        info.icon = activityInfo.loadIcon(pm);
+                        info.resources = r;
+                        info.iconRes = activityInfo.icon == 0 ? packageInfo.applicationInfo.icon : activityInfo.icon;
                         info.labelName = activityInfo.loadLabel(pm).toString();
+                        info.launcher = launcher.contains(activityInfo.name);
                         list.add(info);
                     }
                 }

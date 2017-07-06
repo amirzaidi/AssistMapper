@@ -17,5 +17,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent()
                 .setComponent(new ComponentName(sharedPreferences.getString("package", "com.google.android.googlequicksearchbox"), sharedPreferences.getString("activity", "com.google.android.googlequicksearchbox.SearchActivity")))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
+
     }
 }
