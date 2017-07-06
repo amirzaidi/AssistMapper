@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">App Launcher</string>
+    <string name="title_activity_picker">Launch App</string>
+    <string name="search_title">Search</string>
+</resources>

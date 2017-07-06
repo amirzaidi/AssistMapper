@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="amirz.applauncher">
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/removeAnimation">
+            <meta-data
+                android:name="com.android.systemui.action_assist_icon"
+                android:resource="@mipmap/assist_icon" />
+            <intent-filter>
+                <action android:name="amirz.applauncher.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.VOICE" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="amirz.applauncher.AssistLoggerService"
+            android:permission="android.permission.BIND_VOICE_INTERACTION">
+            <meta-data
+                android:name="android.voice_interaction"
+                android:resource="@xml/assist_service"/>
+            <intent-filter>
+                <action android:name="android.service.voice.VoiceInteractionService"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="amirz.applauncher.AssistLoggerSessionService"
+            android:permission="android.permission.BIND_VOICE_INTERACTION"/>
+
+        <activity
+            android:name=".PickerActivity"
+            android:autoRemoveFromRecents="true"
+            android:label="@string/title_activity_picker"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"></meta-data>
+        </activity>
+    </application>
+</manifest>
