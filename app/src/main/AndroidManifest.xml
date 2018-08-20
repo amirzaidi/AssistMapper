@@ -42,7 +42,7 @@
             android:theme="@style/removeAnimation">
             <meta-data
                 android:name="com.android.systemui.action_assist_icon"
-                android:resource="@mipmap/assist_icon" />
+                android:resource="@mipmap/ic_launcher" />
             <intent-filter>
                 <action android:name="amirz.assistmapper.MAIN" />
 
