@@ -1,4 +1,4 @@
-package amirz.applauncher;
+package amirz.assistmapper;
 
 import android.os.Bundle;
 import android.service.voice.VoiceInteractionSession;

@@ -1,5 +1,5 @@
 <voice-interaction-service
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:recognitionService="amirz.applauncher.AssistLoggerService"
-    android:sessionService="amirz.applauncher.AssistLoggerSessionService"
+    android:recognitionService="amirz.assistmapper.AssistLoggerService"
+    android:sessionService="amirz.assistmapper.AssistLoggerSessionService"
     android:supportsAssist="true"/>

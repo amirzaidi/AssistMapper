@@ -1,4 +1,4 @@
-package amirz.applauncher;
+package amirz.assistmapper;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import amirz.applauncher.R;
 
 public class PickerList extends ArrayAdapter<PickerInfo> {
     private List<PickerInfo> mFiltered;
@@ -43,7 +45,7 @@ public class PickerList extends ArrayAdapter<PickerInfo> {
             mFiltered.addAll(mFull);
         } else {
             for (PickerInfo info : mFull) {
-                if (info.activityName.toLowerCase().contains(mFilter) || info.labelName.toLowerCase().contains(mFilter) || info.packageName.toLowerCase().contains(mFilter)) {
+                if (info.contains(mFilter)) {
                     mFiltered.add(info);
                 }
             }
@@ -74,18 +76,18 @@ public class PickerList extends ArrayAdapter<PickerInfo> {
         return convertView;
     }
 
-    class ImageAsyncTask extends AsyncTask<PickerInfo, Void, Object> {
+    private static class ImageAsyncTask extends AsyncTask<PickerInfo, Void, Object> {
+        private final ImageView mImageView;
 
-        private ImageView imageView;
-
-        public ImageAsyncTask(ImageView imageView) {
-            this.imageView = imageView;
+        private ImageAsyncTask(ImageView imageView) {
+            mImageView = imageView;
         }
 
         protected Object doInBackground(PickerInfo... pickerInfos) {
-            if (pickerInfos[0].iconRes != 0 && pickerInfos[0].resources != null) {
+            PickerInfo pi = pickerInfos[0];
+            if (pi.iconRes != 0 && pi.resources != null) {
                 try {
-                    return pickerInfos[0].resources.getDrawableForDensity(pickerInfos[0].iconRes, DisplayMetrics.DENSITY_XHIGH, null);
+                    return pi.resources.getDrawableForDensity(pi.iconRes, DisplayMetrics.DENSITY_XHIGH, null);
                 } catch (OutOfMemoryError e) {
                     e.printStackTrace();
                 }
@@ -95,7 +97,7 @@ public class PickerList extends ArrayAdapter<PickerInfo> {
         }
 
         protected void onPostExecute(Object result) {
-            imageView.setImageDrawable((Drawable)result);
+            mImageView.setImageDrawable((Drawable)result);
         }
     }
 }

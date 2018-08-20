@@ -1,5 +1,6 @@
-package amirz.applauncher;
+package amirz.assistmapper;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,7 +18,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
@@ -32,19 +32,20 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PickerActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+import amirz.applauncher.R;
 
+public class PickerActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     public static PickerList adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picker);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         adapter = new PickerList(this, new ArrayList<PickerInfo>());
-        ListView list = (ListView)findViewById(R.id.listView);
+        ListView list = findViewById(R.id.listView);
         list.setAdapter(adapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -65,10 +66,13 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
                         .show();
             }
         });
-        new InfoAsyncTask().execute(this);
 
-        SearchView search = (SearchView) findViewById(R.id.search);
-        search.setSearchableInfo(((SearchManager) getSystemService(Context.SEARCH_SERVICE)).getSearchableInfo(getComponentName()));
+        new InfoAsyncTask(this).execute();
+
+        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        SearchView search = findViewById(R.id.search);
+        search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
         search.setOnQueryTextListener(this);
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) search.findViewById(R.id.search_edit_frame).getLayoutParams();
         lp.leftMargin = 0;
@@ -106,10 +110,15 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
         return true;
     }
 
-    class InfoAsyncTask extends AsyncTask<Context, Object, Object> {
+    private static class InfoAsyncTask extends AsyncTask<Object, Object, Object> {
+        private final Activity mActivity;
 
-        protected List<PickerInfo> doInBackground(Context... context) {
-            PackageManager pm = context[0].getPackageManager();
+        private InfoAsyncTask(Activity activity) {
+            mActivity = activity;
+        }
+
+        protected List<PickerInfo> doInBackground(Object... obj) {
+            PackageManager pm = mActivity.getPackageManager();
             List<PackageInfo> packages = pm.getInstalledPackages(PackageManager.GET_ACTIVITIES);
 
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -127,7 +136,7 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
                 ArrayList<PickerInfo> list = new ArrayList<>();
                 Resources r = null;
                 try {
-                    r = createPackageContext(packageInfo.packageName, Context.CONTEXT_IGNORE_SECURITY).getResources();
+                    r = mActivity.createPackageContext(packageInfo.packageName, Context.CONTEXT_IGNORE_SECURITY).getResources();
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -151,24 +160,24 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
         }
 
         protected void onProgressUpdate(Object... progress) {
-            ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-            progressBar.setMax((Integer)progress[0]);
-            progressBar.setProgress((Integer)progress[1]);
-            adapter.addAndFilter((List<PickerInfo>)progress[2]);
+            ProgressBar progressBar = mActivity.findViewById(R.id.progressBar);
+            progressBar.setMax((Integer) progress[0]);
+            progressBar.setProgress((Integer) progress[1]);
+            adapter.addAndFilter((List<PickerInfo>) progress[2]);
         }
 
         protected void onPostExecute(Object result) {
-            FrameLayout view = (FrameLayout) findViewById(R.id.progressWrapper);
+            FrameLayout view = mActivity.findViewById(R.id.progressWrapper);
             view.startAnimation(new CollapseHeightAnimation(view, 200L));
         }
     }
 
-    public class CollapseHeightAnimation extends Animation {
-        protected final int originalHeight;
-        protected final View view;
-        protected float perValue;
+    public static class CollapseHeightAnimation extends Animation {
+        private final int originalHeight;
+        private final View view;
+        private float perValue;
 
-        public CollapseHeightAnimation(View view, long durationMillis) {
+        private CollapseHeightAnimation(View view, long durationMillis) {
             this.view = view;
             this.originalHeight = view.getHeight();
             this.perValue = -originalHeight;
