@@ -2,5 +2,7 @@
     <string name="app_name">Assist Mapper</string>
     <string name="title_activity_picker">Map Assist</string>
     <string name="search_title">Search</string>
-    <string name="set_assist">First, set Assist Launcher as the default Assist app</string>
+    <string name="set_assist">First, set Assist Mapper as the default Assist app</string>
+    <string name="plugin_button">Home button override</string>
+    <string name="plugin_button_desc">Launch selected app with a single tap</string>
 </resources>

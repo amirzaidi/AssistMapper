@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="amirz.applauncher">
+    package="amirz.assistmapper">
+
+    <!-- Notifications -->
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -50,5 +53,20 @@
                 <category android:name="android.intent.category.VOICE" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="amirz.assistmapper.ButtonService"
+            android:label="@string/plugin_button"
+            android:description="@string/plugin_button_desc">
+            <intent-filter>
+                <action android:name="com.android.launcher3.PLUGIN" />
+            </intent-filter>
+            <meta-data
+                android:name="interface.descriptor"
+                android:value="com.android.launcher3.plugin.button.IButtonPlugin" />
+            <meta-data
+                android:name="interface.version"
+                android:value="1" />
+        </service>
     </application>
 </manifest>

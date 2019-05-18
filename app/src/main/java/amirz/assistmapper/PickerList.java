@@ -16,8 +16,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import amirz.applauncher.R;
-
 public class PickerList extends ArrayAdapter<PickerInfo> {
     private List<PickerInfo> mFiltered;
     private List<PickerInfo> mFull;
