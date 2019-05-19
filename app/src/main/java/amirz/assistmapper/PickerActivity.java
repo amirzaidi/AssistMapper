@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,6 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        /*
         String assistant = Settings.Secure.getString(getContentResolver(), "voice_interaction_service");
         if (assistant != null) {
             ComponentName cn = ComponentName.unflattenFromString(assistant);
@@ -89,7 +89,6 @@ public class PickerActivity extends AppCompatActivity implements SearchView.OnQu
 
         Toast.makeText(this, R.string.set_assist, Toast.LENGTH_LONG).show();
         startActivity(new Intent(Settings.ACTION_VOICE_INPUT_SETTINGS));
-        */
     }
 
     @Override
