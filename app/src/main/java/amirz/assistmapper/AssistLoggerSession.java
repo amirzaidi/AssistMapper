@@ -18,8 +18,12 @@ public class AssistLoggerSession extends VoiceInteractionSession {
     @Override
     public void onHandleAssist(Bundle data, AssistStructure structure, AssistContent content) {
         Log.d(TAG, "onHandleAssist");
-        startVoiceActivity(new Intent(getContext(), AssistLaunchActivity.class)
-                .setAction("amirz.assistmapper.MAIN")
-                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        try {
+            startVoiceActivity(new Intent(getContext(), AssistLaunchActivity.class)
+                    .setAction("amirz.assistmapper.MAIN")
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
